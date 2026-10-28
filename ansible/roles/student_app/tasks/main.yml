@@ -1,0 +1,37 @@
+---
+- name: Create application directory
+  ansible.builtin.file:
+    path: "{{ app_directory }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Copy application source
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../app/"
+    dest: "{{ app_directory }}/"
+    owner: root
+    group: root
+    mode: preserve
+  notify: Rebuild and restart student API
+
+- name: Build and run application container
+  community.docker.docker_image:
+    name: "{{ app_image_name }}"
+    source: build
+    build:
+      path: "{{ app_directory }}"
+  notify: Restart student API
+
+- name: Ensure application container is running
+  community.docker.docker_container:
+    name: "{{ app_container_name }}"
+    image: "{{ app_image_name }}"
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "127.0.0.1:{{ app_port }}:8080"
+    security_opts:
+      - no-new-privileges:true
+    read_only: true

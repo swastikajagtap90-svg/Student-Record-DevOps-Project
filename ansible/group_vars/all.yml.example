@@ -1,0 +1,4 @@
+app_port: 8080
+app_directory: /opt/student-record-app
+app_container_name: student-record-api
+app_image_name: student-record-api:local

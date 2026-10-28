@@ -1,0 +1,22 @@
+---
+- name: Rebuild and restart student API
+  community.docker.docker_image:
+    name: "{{ app_image_name }}"
+    source: build
+    force_source: true
+    build:
+      path: "{{ app_directory }}"
+  notify: Restart student API
+
+- name: Restart student API
+  community.docker.docker_container:
+    name: "{{ app_container_name }}"
+    image: "{{ app_image_name }}"
+    state: started
+    restart: true
+    restart_policy: unless-stopped
+    published_ports:
+      - "127.0.0.1:{{ app_port }}:8080"
+    security_opts:
+      - no-new-privileges:true
+    read_only: true

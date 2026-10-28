@@ -1,0 +1,14 @@
+---
+- name: Refresh apt cache and upgrade package index
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install common utilities
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - git
+      - nginx
+    state: present

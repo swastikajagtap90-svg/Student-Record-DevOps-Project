@@ -1,0 +1,28 @@
+---
+- name: Configure Nginx reverse proxy
+  ansible.builtin.template:
+    src: library.conf.j2
+    dest: /etc/nginx/sites-available/student-record
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Validate and reload Nginx
+
+- name: Enable Student Record site
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/student-record
+    dest: /etc/nginx/sites-enabled/student-record
+    state: link
+  notify: Validate and reload Nginx
+
+- name: Disable default Nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Validate and reload Nginx
+
+- name: Ensure Nginx is enabled and started
+  ansible.builtin.systemd:
+    name: nginx
+    enabled: true
+    state: started

@@ -1,0 +1,9 @@
+---
+- name: Configure Student Record API server
+  hosts: student_servers
+  become: true
+  roles:
+    - common
+    - docker
+    - student_app
+    - nginx
